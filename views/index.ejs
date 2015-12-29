@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>微博播报</title>
+        <link href="/stylesheets/casting.css" rel="stylesheet">
+        <link href="/stylesheets/ratchet.min.css" rel="stylesheet">
+        <link href="/stylesheets/hhd_mobile.min.css" rel="stylesheet">
+        <link href="/stylesheets/swiper.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="burger">
+            <div class="x"></div>
+            <div class="y"></div>
+            <div class="z"></div>
+        </div>
+        <div class="menu">
+            <ul>
+                <li class="head"><a href="/"><span class="icon myProfileIcon"></span></a></li>
+                <li class="current"><a href="/apply"><span class="icon castingIcon"></span>道具申请</a></li>
+                <li><a href="/receive"><span class="icon findEnterpriseIcon"></span>收货申请</a></li>
+                <li><a href="/install"><span class="icon findProjectIcon"></span>安装</a></li>
+                <li><a href="/search"><span class="icon findVestorIcon"></span>查询</a></li>
+            </ul>
+        </div>
+        <a class="gotoTop" href="#top"><span class="icon icon-up-nav"></span></a>
+        <!--头部文件，在通过webview引入时，做隐藏-->
+        <header class="bar bar-nav" name="top">
+            <h1 class="title">最新播报</h1>
+        </header>
+        <nav class="bar bar-footer fixFooterBtn">
+            <a class="tab-item current" href="#">
+                <span class="icon icon-news"></span>
+                最新播报
+            </a>
+            <a class="tab-item" href="#">
+                <span>@</span>
+                @我的
+            </a>
+            <a class="circleBtn" href="#">
+                <span></span>
+            </a>
+        </nav>
+        <!-- 主体内容 -->
+        <div class="content company_detail" style="padding-top:30px;">
+            <ul class="castingList">
+
+            </ul>
+        </div>	<!--/content-->
+        </div>
+        <div class="mask"></div>
+        <div class="popup" id="commandListWrapper">
+            <header>推荐关注</header>
+            <div class="popupBody">
+                <div class="commandList">
+                    <img src="../images/avatar.png" />
+                    <span class="fansNum">粉丝&nbsp;299</span>
+                    <p>
+                        <input type="checkbox" />
+                        <span>我的昵称我的昵称我的昵称</span>
+                    </p>
+                </div>
+                <div class="commandList">
+                    <img src="../images/avatar.png" />
+                    <span class="fansNum">粉丝&nbsp;299</span>
+                    <p>
+                        <input type="checkbox" />
+                        <span>我的昵称我的昵称我的昵称</span>
+                    </p>
+                </div>
+                <div class="commandList">
+                    <img src="../images/icon_ggj_b.png" />
+                    <span class="fansNum">粉丝&nbsp;299</span>
+                    <p>
+                        <input type="checkbox" />
+                        <span>我的昵称我的昵称我的昵称</span>
+                    </p>
+                </div>
+                <div class="commandList">
+                    <img src="../images/avatar.png" />
+                    <span class="fansNum">粉丝&nbsp;299</span>
+                    <p>
+                        <input type="checkbox" />
+                        <span>我的昵称我的昵称我的昵称</span>
+                    </p>
+                </div>
+                <div class="commandList">
+                    <img src="../images/avatar.png" />
+                    <span class="fansNum">粉丝&nbsp;299</span>
+                    <p>
+                        <input type="checkbox" />
+                        <span>我的昵称我的昵称我的昵称</span>
+                    </p>
+                </div>
+                <div class="commandList">
+                    <img src="../images/icon_ggj_b.png" />
+                    <span class="fansNum">粉丝&nbsp;299</span>
+                    <p>
+                        <input type="checkbox" />
+                        <span>我的昵称我的昵称我的昵称</span>
+                    </p>
+                </div>
+                <div class="commandList">
+                    <img src="../images/avatar.png" />
+                    <span class="fansNum">粉丝&nbsp;299</span>
+                    <p>
+                        <input type="checkbox" />
+                        <span>我的昵称我的昵称我的昵称</span>
+                    </p>
+                </div>
+                <div class="commandList">
+                    <img src="../images/avatar.png" />
+                    <span class="fansNum">粉丝&nbsp;299</span>
+                    <p>
+                        <input type="checkbox" />
+                        <span>我的昵称我的昵称我的昵称</span>
+                    </p>
+                </div>
+                <div class="commandList">
+                    <img src="../images/avatar.png" />
+                    <span class="fansNum">粉丝&nbsp;299</span>
+                    <p>
+                        <input type="checkbox" />
+                        <span>我的昵称我的昵称我的昵称</span>
+                    </p>
+                </div>
+            </div>
+            <footer>
+                <button type="button" class="cellBtn" onclick="closePopup();">取消</button>
+                <button type="button" class="cellBtn" onclick="closePopup();">确认</button>
+            </footer>
+        </div>
+        <div class="mask2"></div>
+
+        <script src="/javascripts/jquery-1.11.2.min.js"></script>
+        <script src="/javascripts/menu.js"></script>
+        <script src="/javascripts/jsrender.js"></script>
+        <script type="text/x-jsrender" id="newsTemplete">
+            {{for #data}}
+            <li>
+                <span class="listItem">
+                    <span class="castingInfo">
+                        {{if status == 1}}
+                        <span class="followIcon followed">
+                            <span class="icon icon-check"></span>已关注
+                        </span>
+                        {{else}}
+                        <span class="followIcon">
+                            <span class="icon icon-plus"></span>取消关注
+                        </span>
+                        {{/if}}
+                        <span class="avatarBorder">
+                            <img src="../images/{{:icon}}"  />
+                        </span>
+                        <span class="vipIcon"></span>
+                        <span class="insName">{{:title}}</span>
+                        {{for labels}}
+                        <span class="tags {{:on}}">{{:name}}</span>
+                        {{/for}}
+                        <time>{{:dateFormat}}</time>
+                    </span>
+                    <span class="castingContent">
+                        <span class="castingTxt">
+                            {{for topics}}
+                            <a href="#" class="topic">#{{:name}}#</a>
+                            {{/for}}
+                            {{:desc}}
+                        </span>
+                        <span class="castingImgs">
+                            {{for images}}
+                            <img src="../images/{{:src}}" />
+                            {{/for}}
+                        </span>
+                    </span>
+                </span>
+                <span class="castingOprations">
+                    <span class="oprationItem">
+                        <span class="forwardIcon"></span>转发
+                    </span>
+                    <span class="oprationItem">
+                        <span class="commentIcon"></span>{{if comments == 0}}评论{{else}}{{:comments}}{{/if}}
+                    </span>
+                    <span class="oprationItem">
+                        <span class="praiseIcon"></span>{{if likes == 0}}赞{{else}}{{:likes}}{{/if}}
+                    </span>
+                </span>
+            </li>
+            {{/for}}
+        </script>
+        <script>
+            $.getJSON('/news', {}, function(data) {
+                $('.castingList').append(
+                        $('#newsTemplete').render(data)
+                )
+            })
+        </script>
+    </body>
+</html>

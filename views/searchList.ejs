@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ./common/header %>
+    <style>
+        .panel-heading {
+            padding: 3px 15px;
+        }
+
+        .panel-heading p, .panel-body .text-muted {
+            margin: 0;
+        }
+
+        .panel-heading .text-primary {
+            margin-top: 10px;
+        }
+
+        .panel-body .row {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .space {
+            margin: 0 -5px;
+            border: 1px solid #F5F5F5;
+        }
+
+        .numberPicker {
+            top: 4px;
+            width: 70px;
+            display: inline-table;
+        }
+
+        .numberPicker .input-group-addon {
+            padding: 0 6px;
+            font-size: 12px;
+        }
+
+        .numberPicker input {
+            height: 20px;
+        }
+
+        .label-label {
+            margin-top: 1px;
+            cursor: pointer;
+            background-color: #ffffff;
+            border: 1px solid #f0ad4e;
+            color: #f0ad4e;
+        }
+
+        .label-label-blue {
+            border: 1px solid #31708f;
+            color: #31708f;
+        }
+    </style>
+</head>
+<body>
+<div class="header clearfix text-center">
+    <span class="pull-right header-icon"><a href="/" class="glyphicon glyphicon-home" aria-hidden="true"></a></span>
+    <span class="">查询道具申请单</span>
+    <span class="pull-left header-icon">
+        <a href="Index" class="glyphicon glyphicon-chevron-left" aria-hidden="true"></a></span>
+</div>
+<div class="container maincontent">
+
+</div>
+</body>
+<script type="text/x-jsrender" id="searchTemplete">
+    {{for #data}}
+    <div class="panel panel-default" style="margin-top:10px;">
+        <div class="panel-heading">
+            <div class="clearfix">
+                <div class="pull-left">
+                    <p>申请单：{{:APP}}</p>
+                    <p class="text-muted"><small>{{:Applydate}}</small></p>
+                </div>
+                <div class="pull-right">
+                    <p class="text-primary">{{:Applystate}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            {{for children}}
+            {{if #getIndex() !=0}}<div class="space"></div>{{/if}}
+            <div class="row">
+                <div class="col-xs-2">
+                    <img src="{{:FullImageurl}}" width="48" height="48" />
+                </div>
+                <div class="col-xs-10">
+                    <p class="text-muted"><small>{{:Materialname}}</small></p>
+                    <div class="text-muted">
+                        <span class="label label-label">申请数量 {{:Quantity}}</span>
+                        {{if Approval_quantity}}<span class="label label-label label-label-blue">审批数量 {{:Approval_quantity}}</span>{{/if}}
+                    </div>
+                </div>
+            </div>
+            {{/for}}
+        </div>
+    </div>
+    {{/for}}
+
+</script>
+<script>
+    var finished = '@ViewBag.finished';
+    var startDate = '@ViewBag.startDate';
+    var endDate = '@ViewBag.endDate';
+    var strVariables = '@ViewBag.strVariables';
+    var ListModel = {
+        init: function () {
+            this.loadData();
+        },
+        loadData: function () {
+            $.getJSON('/search/GetApplylist',
+                    {finished: finished, startDate: startDate, endDate: endDate, strVariables: strVariables},
+                    function (data) {
+                        var html = "<div class='text-center'>No data found</div>";
+                        //data = testdata; ///临时测试数据///
+                        if (data.length > 0) {
+                            var obj = {};
+                            for (var i in data) {
+                                obj[data[i].APP] = {
+                                    APP: data[i].APP, Applydate: data[i].Applydate, Applystate: data[i].Applystate,
+                                    children: (obj[data[i].APP] && obj[data[i].APP].children || []).concat(data[i])
+                                };
+                            }
+                            var arr = [], keys = Object.keys(obj);
+                            for (var i in keys) {
+                                arr.push(obj[keys[i]]);
+                            }
+                            html = $('#searchTemplete').render(arr);
+                        }
+                        $('.maincontent').html(html);
+                    }.bind(this))
+        }
+    }
+    $(function () {
+        ListModel.init();
+    })
+</script>
+</html>

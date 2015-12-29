@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ./common/header %>
+    <style>
+        .search-box button {
+            border-bottom-left-radius: 16px;
+            border-top-left-radius: 16px;
+            border-right: 0;
+        }
+
+        .search-box input {
+            border-bottom-right-radius: 16px;
+            border-top-right-radius: 16px;
+            border-left: 0;
+            padding: 6px 0;
+        }
+
+        .panel-heading {
+            padding: 3px 15px;
+        }
+
+        .panel-heading p, .panel-body .text-muted {
+            margin: 0;
+        }
+
+        .panel-body .row {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .space {
+            margin: 0 -5px;
+            border: 1px solid #F5F5F5;
+        }
+
+        .numberPicker {
+            top: 4px;
+            width: 80px;
+            display: inline-table;
+        }
+
+        .numberPicker .input-group-addon {
+            padding: 0 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .numberPicker input {
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="header clearfix text-center">
+    <span class="pull-right header-icon"><a href="/" class="glyphicon glyphicon-home" aria-hidden="true"></a></span>
+    <span class="">收货管理</span>
+</div>
+
+<div class="container maincontent">
+    <div class="col-xs-12 input-group search-box">
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" id="search"><span class="glyphicon glyphicon-search"
+                                                                            aria-hidden="true"></span></button>
+        </span>
+        <input type="text" class="form-control" id="keywords" name="keywords" placeholder="搜索申请单号、配单号、快递单号、物品名称">
+    </div>
+    <div class="content-body">
+
+    </div>
+</div>
+</body>
+
+<script type="text/x-jsrender" id="receiveTemplete">
+    {{for #data}}
+    <div class="panel panel-default" style="margin-top:10px;">
+        <div class="panel-heading">
+            <div class="clearfix">
+                <div class="pull-left">
+                    <p>申请单：{{:APP}}</p>
+                    <p class="text-muted">
+                        <small>发货单号：{{:DT}}|快递单：{{:Express_number}}</small>
+                    </p>
+                </div>
+                <div class="pull-right">
+                    <button type="button" onclick="ReceiveOrder.receive(this, '{{:DT}}')" class="btn btn-warning btn-sm">收货</button>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            {{for children}}
+            {{if #getIndex() != 0}}
+            <div class="space"></div>{{/if}}
+            <div class="row" data="{{:Materialid}}">
+                <div class="col-xs-2">
+                    <img src="{{:FullImageurl}}" width="48" height="48" />
+                </div>
+                <div class="col-xs-10">
+                    <p class="text-muted">
+                        <small>{{:Materialname}}</small>
+                    </p>
+                    <div class="text-muted">
+                        <small>数量</small>
+                        <div class="input-group numberPicker">
+                            <span class="input-group-addon" onclick="ReceiveOrder.operateCount(this, 1)">+</span>
+                            <input type="text" class="form-control" aria-label="" value="{{:Quantity}}" />
+                            <span class="input-group-addon" onclick="ReceiveOrder.operateCount(this, -1)">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/for}}
+        </div>
+    </div>
+    {{/for}}
+</script>
+<script>
+    var ReceiveOrder = {
+        init: function () {
+            this.loadData();
+            this.bindAction();
+        },
+        loadData: function (param) {
+            $.get('/receive/GetDTList', {strVariable: param}, function (data) {
+                var html = "<div class='text-center'>No data found</div>";
+                if (data.length > 0) {
+                    var obj = {};
+                    for (var i in data) {
+                        obj[data[i].DT] = {
+                            APP: data[i].APP, DT: data[i].DT, Express_number: data[i].Express_number,
+                            children: (obj[data[i].DT] && obj[data[i].DT].children || []).concat(data[i])
+                        };
+                    }
+                    var arr = [], keys = Object.keys(obj);
+                    for (var i in keys) {
+                        arr.push(obj[keys[i]]);
+                    }
+                    html = $('#receiveTemplete').render(arr);
+                }
+                $('.content-body').html(html);
+            }.bind(this))
+        },
+        bindAction: function () {
+            $('#keywords').keydown(function (e) {
+                if (e.keyCode == 13) {
+                    $('#search').click();
+                }
+            });
+            $('#search').click(function () {
+                var param = $('#keywords').val();
+                this.loadData(param);
+            }.bind(this))
+        },
+        operateCount: function (obj, num, Materialid) {
+            var input = $(obj).parent().find('input');
+            var count = parseInt(input.val());
+            if ((count + num) < 0) return;
+            input.val(count + num);
+        },
+        receive: function (obj, DT) {
+            var self = this;
+            var param = {
+                dt: DT,
+                dtConfirmDataList: []
+            }
+            var parent = $(obj).parent().parent().parent();
+            parent.next().find('.row').each(function () {
+                var Materialid = $(this).attr('data');
+                var quantity = $(this).find('input').val();
+                param.dtConfirmDataList.push({materialid: Materialid, quantity: quantity});
+            })
+            $.ajax({
+                url: '/receive/DoneUpdateDTState',
+                type: 'POST',
+                data: JSON.stringify(param),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (data) {
+                    alert('收货成功!');
+                    self.loadData();
+                }
+            });
+        }
+    }
+    $(function () {
+        ReceiveOrder.init();
+    })
+</script>
+</html>

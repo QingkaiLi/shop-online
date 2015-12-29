@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ./common/header %>
+    <style>
+        .search-box button {
+            border-bottom-left-radius: 16px;
+            border-top-left-radius: 16px;
+            border-right: 0;
+        }
+
+        .search-box input {
+            border-bottom-right-radius: 16px;
+            border-top-right-radius: 16px;
+            border-left: 0;
+            padding: 6px 0;
+        }
+
+        .panel-heading {
+            padding: 3px 15px;
+        }
+
+        .panel-heading p, .panel-body .text-muted {
+            margin: 0;
+        }
+
+        .panel-body .row {
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .space {
+            margin: 0 -5px;
+            border: 1px solid #F5F5F5;
+        }
+
+        .numberPicker {
+            top: 4px;
+            width: 70px;
+            display: inline-table;
+        }
+
+        .numberPicker .input-group-addon {
+            padding: 0 6px;
+            font-size: 12px;
+        }
+
+        .numberPicker input {
+            height: 20px;
+        }
+
+        .label-label {
+            margin-top: 1px;
+            cursor: pointer;
+            background-color: #ffffff;
+            border: 1px solid #f0ad4e;
+            color: #f0ad4e;
+        }
+
+        .uploadPics {
+            margin-top: 3px;
+        }
+
+        .deletePic {
+            position: absolute;
+            right: 10px;
+            color: #d9534f;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="header clearfix text-center">
+    <span class="pull-right header-icon"><a href="/" class="glyphicon glyphicon-home" aria-hidden="true"></a></span>
+    <span class="">道具安装</span>
+</div>
+<div class="container maincontent">
+    <div class="col-xs-12 input-group search-box">
+        <span class="input-group-btn">
+            <button id="search" class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"
+                                                                            aria-hidden="true"></span></button>
+        </span>
+        <input type="text" class="form-control" id="keywords" name="keywords" placeholder="搜索申请单号、物品名称">
+    </div>
+    <div class="mainBody">
+    </div>
+</div>
+</body>
+<script type="text/x-jsrender" id="installTemplete">
+        {{for #data}}
+        <div class="panel panel-default" style="margin-top:10px;">
+            <div class="panel-heading">
+                <div class="clearfix">
+                    <div class="pull-left">
+                        <p>申请单：{{:APP}}</p>
+                        <p class="text-muted"><small>{{:ApplydateFprmat}}</small></p>
+                    </div>
+                    <div class="pull-right">
+                        <button onclick="InstallModel.complete(this, '{{:APP}}')" type="button" class="btn btn-danger btn-sm">完成</button>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                {{for children}}
+                <div class="row">
+                    <div class="col-xs-2">
+                        <img src="{{:FullImageurl}}" width="48" height="48" />
+                    </div>
+                    <div class="col-xs-10">
+                        <p class="text-muted"><small>{{:Materialname}}</small></p>
+                        <div class="text-muted">
+                            <span class="label label-label">收货数量 {{:Received_quantity}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="space"></div>
+                {{/for}}
+                <div class="row uploadRow">
+                    <div class="col-xs-12">
+                        <span style="color:#f0ad4e ;">安装拍照</span>
+                    </div>
+                    <div class="col-xs-3 uploadPics">
+                        <img src="./images/capt.png" width="48" height="48" />
+                        <input type="file" name="file" class="form-control hide" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/for}}
+
+</script>
+<script>
+    var InstallModel = {
+        init: function () {
+            this.loadData();
+            this.bindAction();
+        },
+        complete: function (obj, APP) {
+            var payload = {app: APP, installDataList: []}
+            var parent = $(obj).parent().parent().parent().parent().find('.uploadRow');
+            var imgs = parent.find('img');
+            imgs = imgs.filter(function () {
+                return ($(this).parent().children().length == 3)
+            })
+            if (imgs.length < 1) alert('请上传图片！');
+            else {
+                $.each(imgs, function () {
+                    payload.installDataList.push({imageData: $(this).attr("src")});
+                })
+                $.ajax({
+                    contentType: 'application/json',
+                    url: '/install/DoneUpdateApplyStateByAPP',
+                    dataType: 'json',
+                    async: false,
+                    type: 'POST',
+                    data: JSON.stringify(payload),
+                    success: function (data, status) {
+                        alert("success")
+                    },
+                    error: function (data, status, e)//服务器响应失败处理函数
+                    {
+                        alert(e);
+                    }
+                })
+            }
+
+        },
+        bindAction: function () {
+            var that = this;
+            $('#keywords').keydown(function (e) {
+                if (e.keyCode == 13) {
+                    $('#search').click();
+                }
+            });
+            $('#search').click(function () {
+                var param = $('#keywords').val();
+                that.loadData(param);
+            })
+        },
+        loadData: function (strVariable) {
+            $.getJSON('/install/GetInstallApplyList', {strVariable: strVariable},
+                    function (data) {
+                        var html = "<div class='text-center'>No data found</div>";
+                        //data = testdata; ///临时测试数据///
+                        if (data.length > 0) {
+                            var obj = {};
+                            for (var i in data) {
+                                obj[data[i].APP] = {
+                                    APP: data[i].APP, Applydate: data[i].Applydate,
+                                    children: (obj[data[i].APP] && obj[data[i].APP].children || []).concat(data[i])
+                                };
+                            }
+                            var arr = [], keys = Object.keys(obj);
+                            for (var i in keys) {
+                                arr.push(obj[keys[i]]);
+                            }
+                            html = $('#installTemplete').render(arr);
+                        }
+                        $('.mainBody').html(html);
+                        this.initialUpload();
+                    }.bind(this))
+        },
+        initialUpload: function () {
+            var that = this;
+            $('.uploadRow').each(function () {
+                that.addUploadEvent($(this));
+            })
+        },
+        addUploadEvent: function (current) {
+            var that = this;
+            var objs = current.find('.uploadPics');
+            var obj = $(objs[objs.length - 1]);
+            obj.find('img').click(function () {
+                $(this).next().click();
+            });
+            obj.find('input').change(function (e) {
+                that.preview($(this), e);
+                that.addMore($(this), current);
+                if (objs.length < 10) {
+                    that.newImg(current);
+                    that.addUploadEvent(current);
+                }
+            })
+        },
+        addMore: function ($this, current) {
+            var that = this;
+            var prev = $this.prev();
+            prev.unbind('click');
+
+            $('<span class="glyphicon glyphicon-minus-sign deletePic"></span>').appendTo($this.parent());
+            var next = $this.next();
+            next.bind('click', function () {
+                $(this).parent().remove();
+                if (current.find('.uploadPics:last').children().length == 3) {
+                    that.newImg(current);
+                    that.addUploadEvent(current);
+                }
+            });
+        },
+        preview: function ($this, e) {
+            var prev = $this.prev();
+            var file = e.target.files[0]
+            var reader = new FileReader()
+            reader.onload = function (e) {
+                prev.attr('src', e.target.result);
+            }
+            reader.readAsDataURL(file);
+
+        },
+        newImg: function ($parent) {
+            var html = '<div class="col-xs-3 uploadPics"><img src="./images/capt.png" width="48" height="48" />' +
+                    '<input type="file" name="file" class="form-control hide" /></div>';
+            $(html).appendTo($parent);
+        }
+    }
+
+    $(function () {
+        InstallModel.init();
+    })
+
+</script>
+</html>

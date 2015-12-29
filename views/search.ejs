@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ./common/header %>
+    <link href="/stylesheets/bootstrap-datepicker3.min.css" rel="stylesheet"/>
+    <style>
+        .nav > li {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .nav > li > a {
+            font-size: 18px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+            color: #099fde;
+            cursor: default;
+            background-color: #F0F0F0;
+            border-width: 0;
+            border-bottom-color: #099fde;
+            border-bottom-width: 4px;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .col-xs-4, .col-xs-8 {
+            padding-left: 5px;
+            padding-right: 0;
+        }
+
+        .form-group {
+            margin-top: 25px;
+            font-size: 20px;
+        }
+
+        .form-control {
+            font-size: 16px;
+        }
+
+        .form-horizontal .form-group {
+            margin-right: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="header clearfix text-center">
+    <span class="pull-right header-icon"><a href="/" class="glyphicon glyphicon-home" aria-hidden="true"></a></span>
+    <span class="">查询道具申请</span>
+</div>
+<div class="container maincontent">
+    <div class="row" style="background-color: #F0F0F0;">
+        <ul id="fixingTypeTab" class="nav nav-tabs  nav-tabs-justified text-center">
+            <li role="presentation" class="col-xs-6 active" data-fixingtype="N"><a href="#">未完成</a></li>
+            <li role="presentation" class="col-xs-6" data-fixingtype="Y"><a href="#">已完成</a></li>
+        </ul>
+    </div>
+    <div class="" style="margin-top:40px;">
+        <form class="form-horizontal">
+            <input type="hidden" id="finished" name="finished" value="N"/>
+
+            <div class="form-group">
+                <label class="col-xs-4 control-label ">申请时间</label>
+
+                <div class="col-xs-4" style="">
+                    <input type="text" class="form-control date" id="startDate" name="startDate" placeholder="开始时间"/>
+                </div>
+                <div class="col-xs-4">
+                    <input type="text" class="form-control date" id="endDate" name="endDate" placeholder="结束时间"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="strVariable" class="col-xs-4 control-label ">关键词</label>
+
+                <div class="col-xs-8">
+                    <input type="text" class="form-control" id="strVariable" name="strVariable" placeholder="物料名称">
+                </div>
+            </div>
+            <div class="form-group" style=" margin-right: -15px;">
+                <div class="col-xs-12 ">
+                    <a id="search" class="btn btn-warning btn-block active btn-lg">查询</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+<script src="/javascripts/bootstrap-datepicker.min.js"></script>
+<script src="/javascripts/bootstrap-datepicker.zh-CN.min.js"></script>
+<script src="/javascripts/moment.js"></script>
+<script>
+    var SearchOrder = {
+        init: function () {
+            this.bindDatepciker();
+            this.bindTab();
+            this.bindSearch();
+        },
+        bindSearch: function () {
+            $('#search').click(function () {
+                var param = 'finished=' + $('#finished').val()
+                param += '&startDate=' + $('#startDate').val();
+                param += '&endDate=' + $('#endDate').val();
+                param += '&strVariable=' + $('#strVariable').val();
+                window.location.href = '/search/List?' + param;
+                return;
+            })
+        },
+        bindTab: function () {
+            $("#fixingTypeTab li").click(function () {
+                $("#fixingTypeTab li").removeClass("active");
+                $(this).addClass("active");
+                $("#finished").val($(this).data("fixingtype"));
+            });
+        },
+        bindDatepciker: function () {
+            $(".date").datepicker({
+                language: 'zh-CN',
+                format: 'yyyy-mm-dd',
+                autoclose: true,
+                clearBtn: true,
+                todayHighlight: true
+            });
+
+            var $startDate = $('#startDate');
+            var $endDate = $('#endDate');
+
+            $startDate.on("changeDate", function (e) {
+                $endDate.datepicker("setStartDate", e.date);
+                $endDate.datepicker("setEndDate", moment(e.date).add(60, 'day').toDate());
+            })
+            $endDate.on("changeDate", function (e) {
+                $startDate.datepicker("setEndDate", e.date);
+                $startDate.datepicker("setStartDate", moment(e.date).add(-60, 'day').toDate());
+            })
+            $startDate.datepicker('update', moment().add(-30, 'day').toDate());
+            $endDate.datepicker('update', new Date());
+            $startDate.datepicker('update')
+        }
+    }
+
+    $(function () {
+        SearchOrder.init();
+    });
+
+</script>
+</html>

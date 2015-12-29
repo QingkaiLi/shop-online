@@ -1,0 +1,483 @@
+/*!
+ * =====================================================
+ * 2015-02-15
+ *
+ * designed by Phoebe.
+ * 2015-03-10 13:58
+ * modify by phoebe
+ * =====================================================
+ */
+* {
+    font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans GB, WenQuanYi Micro Hei, sans-serif;
+    -webkit-font-smoothing: antialiased
+}
+
+@media screen and (min-width: 1024px) {
+    body {
+        background: #f7f7f7
+    }
+
+    .content, .bar {
+        width: 740px;
+        margin-left: auto;
+        margin-right: auto;
+        border-left: 1px solid #ddd;
+        border-right: 1px solid #ddd
+    }
+}
+
+.content {
+    background: #f7f7f7
+}
+
+dd, ul {
+    -webkit-margin-start: 0;
+    -webkit-padding-start: 0;
+    -webkit-margin-before: 0
+}
+
+ul {
+    list-style: none
+}
+
+input[type="checkbox"], input[type="radio"] {
+    height: 14px
+}
+
+.textCenter {
+    text-align: center
+}
+
+
+div.burger {
+    height: 26px;
+    width: 40px;
+    position: fixed;
+    top: 0;
+    left: 21px;
+    cursor: pointer;
+    z-index: 1000000
+}
+
+div.x, div.y, div.z {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    background: #fff;
+    border-radius: 2px;
+    -webkit-transition: all 200ms ease-out;
+    -moz-transition: all 200ms ease-out;
+    -ms-transition: all 200ms ease-out;
+    -o-transition: all 200ms ease-out;
+    transition: all 200ms ease-out
+}
+
+div.x, div.y, div.z {
+    height: 3px;
+    width: 26px;
+    background-color: #999;
+    -webkit-transition: all 100ms ease-out;
+    -moz-transition: all 100ms ease-out;
+    -ms-transition: all 100ms ease-out;
+    -o-transition: all 100ms ease-out;
+    transition: all 100ms ease-out
+}
+
+div.y.squize {
+    width: 0;
+    -webkit-transition: all 100ms ease-out;
+    -moz-transition: all 100ms ease-out;
+    -ms-transition: all 100ms ease-out;
+    -o-transition: all 100ms ease-out;
+    transition: all 100ms ease-out
+}
+
+div.y {
+    top: 18px
+}
+
+div.z {
+    top: 37px
+}
+
+div.open div.x, div.open div.z {
+    top: 15px;
+    -webkit-transition: all 70ms ease-out;
+    -moz-transition: all 70ms ease-out;
+    -ms-transition: all 70ms ease-out;
+    -o-transition: all 70ms ease-out;
+    transition: all 70ms ease-out
+}
+
+div.rotate30 {
+    -ms-transform: rotate(30deg);
+    -webkit-transform: rotate(30deg);
+    transform: rotate(30deg);
+    -webkit-transition: all 70ms ease-out;
+    -moz-transition: all 70ms ease-out;
+    -ms-transition: all 70ms ease-out;
+    -o-transition: all 70ms ease-out;
+    transition: all 70ms ease-out
+}
+
+div.rotate150 {
+    -ms-transform: rotate(150deg);
+    -webkit-transform: rotate(150deg);
+    transform: rotate(150deg);
+    -webkit-transition: all 70ms ease-out;
+    -moz-transition: all 70ms ease-out;
+    -ms-transition: all 70ms ease-out;
+    -o-transition: all 70ms ease-out;
+    transition: all 70ms ease-out
+}
+
+div.rotate45 {
+    -ms-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    -webkit-transition: all 100ms ease-out;
+    -moz-transition: all 100ms ease-out;
+    -ms-transition: all 100ms ease-out;
+    -o-transition: all 100ms ease-out;
+    transition: all 100ms ease-out
+}
+
+div.rotate135 {
+    -ms-transform: rotate(135deg);
+    -webkit-transform: rotate(135deg);
+    transform: rotate(135deg);
+    -webkit-transition: all 100ms ease-out;
+    -moz-transition: all 100ms ease-out;
+    -ms-transition: all 100ms ease-out;
+    -o-transition: all 100ms ease-out;
+    transition: all 100ms ease-out
+}
+
+div.menu {
+    height: 100%;
+    margin-left: -200px;
+    opacity: 0;
+    position: fixed;
+    -webkit-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -moz-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -ms-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -o-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    z-index: 99999
+}
+
+#menu-bg {
+    position: absolute;
+    left: -10px;
+    top: -120px;
+    opacity: .3;
+    -webkit-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -moz-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -ms-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -o-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000)
+}
+
+div.menu.animate #menu-bg {
+    left: -23px;
+    -webkit-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -moz-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -ms-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -o-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000)
+}
+
+div.menu.animate {
+    margin-left: 0;
+    opacity: 1;
+    -webkit-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -moz-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -ms-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -o-transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    transition: all 500ms cubic-bezier(0.000, 0.995, 0.990, 1.000)
+}
+
+div.menu ul {
+    position: relative;
+    display: block;
+    width: 150px;
+    height: 100%;
+    background-color: #333c41
+}
+
+div.menu ul li {
+    list-style: none;
+    height: 45px;
+    line-height: 45px;
+    text-align: left;
+    font-size: 15px;
+    border-bottom: 1px solid #555656;
+    box-shadow: 0 1px 1px #2b3337
+}
+
+div.menu ul li.head {
+    background-color: #000;
+    color: #fff;
+    height: 44px;
+    line-height: 44px;
+    overflow: hidden;
+    border-bottom: 0
+}
+
+div.menu ul li.head span {
+    float: right;
+    margin-top: 11px;
+    margin-right: 11px
+}
+
+div.menu ul li.current {
+    background-color: #2ba7d3
+}
+
+div.menu ul li a {
+    display: block;
+    padding-left: 20px;
+    color: #fff;
+    text-decoration: none;
+    letter-spacing: 1px
+}
+
+div.menu ul li a span {
+    margin-right: 10px;
+    font-size: 14px
+}
+
+div.menu.animate ul li {
+    -webkit-transition: all 1000ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -moz-transition: all 1000ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -ms-transition: all 1000ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    -o-transition: all 1000ms cubic-bezier(0.000, 0.995, 0.990, 1.000);
+    transition: all 1000ms cubic-bezier(0.000, 0.995, 0.990, 1.000)
+}
+
+div.menu.animate li:nth-of-type(1) {
+    transition-delay: 0
+}
+
+div.menu.animate li:nth-of-type(2) {
+    transition-delay: .06s
+}
+
+div.menu.animate li:nth-of-type(3) {
+    transition-delay: .12s
+}
+
+div.menu.animate li:nth-of-type(4) {
+    transition-delay: .18s
+}
+
+div.menu.animate li:nth-of-type(5) {
+    transition-delay: .24s
+}
+
+div.menu.animate li:nth-of-type(6) {
+    transition-delay: .30s
+}
+
+div.menu.animate li:nth-of-type(7) {
+    transition-delay: .36s
+}
+
+.myProfileIcon {
+    display: block;
+    background: url(../images/myProfileIcon.png) no-repeat;
+    width: 20px;
+    height: 20px;
+    background-size: cover
+}
+
+.castingIcon {
+    display: inline-block;
+    background: url(../images/castingIcon.png) no-repeat;
+    width: 19px;
+    height: 18px;
+    background-size: cover
+}
+
+.findEnterpriseIcon {
+    display: inline-block;
+    background: url(../images/findEnterpriseIcon.png) no-repeat;
+    width: 18px;
+    height: 18px;
+    background-size: cover
+}
+
+.findProjectIcon {
+    display: inline-block;
+    background: url(../images/findProjectIcon.png) no-repeat;
+    width: 18px;
+    height: 18px;
+    background-size: cover
+}
+
+.findVestorIcon {
+    display: inline-block;
+    background: url(../images/findVestorIcon.png) no-repeat;
+    width: 17px;
+    height: 18px;
+    background-size: cover
+}
+
+.findServiceIcon {
+    display: inline-block;
+    background: url(../images/findServiceIcon.png) no-repeat;
+    width: 18px;
+    height: 18px;
+    background-size: cover
+}
+
+
+.bar-footer {
+    background: #fff
+}
+
+.bar-footer span {
+    font-size: 16px;
+    color: #999
+}
+
+.bar-footer span.icon {
+    vertical-align: middle
+}
+
+
+.findRoadshowIcon {
+    display: inline-block;
+    background: url(../images/findRoadshowIcon.png) no-repeat;
+    width: 18px;
+    height: 18px;
+    background-size: cover
+}
+
+.switchIDIcon {
+    display: inline-block;
+    background: url(../images/switchID.png) no-repeat;
+    width: 18px;
+    height: 18px;
+    background-size: cover
+}
+
+.company_detail_top {
+    background: #eee;
+    border-bottom: 1px solid #ccc;
+    line-height: 2.5em;
+    -webkit-box-shadow: 0 1px 10px rgba(0, 0, 0, .2);
+    box-shadow: 0 1px 10px rgba(0, 0, 0, .2)
+}
+
+.company_detail_top .btn-negative {
+    background: #f80;
+    border: #f60
+}
+
+.company_detail {
+    padding: 30px 0 10px;
+    color: #333;
+    font-size: 14px !important;
+    margin: 10px auto;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc
+}
+
+.company_detail h2 {
+    font-size: 1.2em;
+    font-weight: 300;
+    margin-top: 1em
+}
+
+h2, .company_detail + h2 {
+    font-size: .9em;
+    font-weight: 500;
+    padding: 0 10px;
+    margin-top: 20px
+}
+
+.fixFooterBtn {
+    height: auto
+}
+
+.fixFooterBtn button {
+    display: block;
+    width: 50%;
+    margin: 10px auto;
+    background-color: #2ba7d3;
+    color: #fff;
+    border: 0;
+    border-radius: 5px;
+    padding: 5px 0
+}
+
+.bar a, .bar-tab .tab-item, .bar .title {
+    color: #666
+}
+
+.mask, .mask2 {
+    display: none;
+    position: fixed;
+    background: rgba(0, 0, 0, 0.3);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1
+}
+
+.mask2 {
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 100
+}
+
+.f10_detail_tab .mask {
+    z-index: 15
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    z-index: 101;
+    background-color: #fff;
+    width: 80%;
+    left: 10%;
+    top: 10%;
+    border-radius: 5px
+}
+
+.popup header {
+    text-align: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc
+}
+
+.popup footer {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    text-align: center
+}
+
+.popup .popupBody {
+    padding:10px;
+}
+.popup.successful {
+    text-align:center;
+    padding:30px;
+}
+.popup .cellBtn {
+    width:49%;
+    text-align:center;
+    border:none;
+    background-color:#fff;
+}
+.popup .cellBtn:active,
+.popup .cellBtn:hover {
+    color:#2ba7d3;
+}
+.popup .cellBtn+.cellBtn {
+    border-left:1px solid #ccc;
+}
+

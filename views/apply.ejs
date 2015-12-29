@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ./common/header %>
+    <style>
+        .nav-cate.navbar {
+            margin-left: -15px;
+            margin-right: -15px;
+            min-height: 40px;
+            background-color: #fff;
+            border-color: #fff;
+        }
+
+        .nav-cate .navbar-brand {
+            height: 40px;
+            font-size: 14px;
+            padding: 8px 1px;
+        }
+
+        .nav-cate .navbar-collapse {
+            position: absolute;
+            z-index: 2000;
+            width: 100%;
+        }
+
+        .nav-cate .navbar-toggle {
+            float: left;
+            margin: 5px 0 5px 1px;
+            padding: 4px 2px;
+            border-color: #fff;
+        }
+
+        .search-box button {
+            border-bottom-left-radius: 16px;
+            border-top-left-radius: 16px;
+            border-right: 0;
+        }
+
+        .search-box input {
+            border-bottom-right-radius: 16px;
+            border-top-right-radius: 16px;
+            border-left: 0;
+        }
+
+        .item-box {
+            padding-left: 5px;
+            padding-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .item-box > div {
+            height: 230px;
+            border: 3px solid #F5F5F5;
+            padding: 2px 10px;
+        }
+
+        .item-box > div > .thumbnail {
+            margin-bottom: 0;
+            border: 0;
+        }
+
+        .item-box > div > .text-muted {
+            margin-bottom: 0px;
+            font-size: 12px;
+            word-wrap: break-word;
+        }
+
+        .item-box .img-add2cart {
+            position: absolute;
+            top: 205px;
+            right: 10px;
+        }
+
+        .nav-menu {
+            background-color: #ffffff;
+            border-bottom: 1px solid #ddd;
+            margin: 0 -15px;
+        }
+
+        .nav-menu ul, .nav-menu ul > li.active > a, .nav-menu ul > li.active > a:hover {
+            background-color: #eee;
+            border: 0;
+        }
+
+        .nav-menu ul > li .text-muted {
+            border-bottom: 1px solid #F5F5F5;
+        }
+
+        .nav-menu ul > li.active .text-muted {
+            border-bottom: 3px solid #ff8800;
+        }
+
+        .panel {
+            border: 0;
+        }
+
+        .panel-heading .glyphicon {
+            font-size: 20px;
+        }
+
+        .panel-body {
+            padding: 5px 15px;
+        }
+
+        .panel-body p {
+            margin: 0;
+        }
+
+        .panel-body a p {
+            color: #428bca;
+            cursor: pointer;
+        }
+
+        .my-modal.fade.in {
+            background-color: #000000;
+            opacity: 0.5;
+        }
+
+        .glyphicon {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="header clearfix text-center">
+    <span class="pull-right header-icon"><a href="/" class="glyphicon glyphicon-home" aria-hidden="true"></a></span>
+    <span class="">道具申请</span>
+</div>
+
+<div class="container maincontent">
+    <div class="">
+        <nav class="navbar navbar-default nav-cate ">
+            <div class="container" style="padding-left:10px;">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <div class="col-xs-3 col-sm-2" style="padding-right:5px;">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                                data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#">分类</a>
+                    </div>
+                    <div class="col-xs-7 col-sm-8 input-group search-box">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" id="search"><span
+                                    class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                        </span>
+                        <input type="hidden" value="" id="cates"/>
+                        <input type="text" class="form-control" id="keywords" name="keywords" placeholder="搜索物料名称、编号">
+                    </div>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <div class="nav navbar-nav nav-menu">
+                        <div class="row" style="margin-left:0; margin-right:0;">
+                            <div class="col-xs-2" style="padding-left:0; padding-right:0;">
+                                <ul class="nav nav-tabs nav-stacked" role="tablist"></ul>
+                            </div>
+                            <div class="col-xs-10" style="padding-left:0; padding-right:0;">
+                                <div class="tab-content">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+    </div>
+    <div class="container-fluid" style="margin-top:-15px;margin-bottom:80px;">
+        <div class="row data-content">
+        </div>
+        <div class="row pageBar">
+            <div class="col-xs-12 text-center">
+                <input id="viewMore" class="btn btn-default" style="width:200px" type="button" value="加载更多"/>
+            </div>
+        </div>
+        <nav class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <div class="col-xs-6" style="background-color: #585457;">
+                        <p class="navbar-text" style=" color: #ffffff; font-size: 18px;">件数：<span id="cartCount"></span>
+                        </p>
+                    </div>
+                    <div class="col-xs-6" style="background-color: #F35749;">
+                        <a href="/apply/Confirm">
+                            <p class="navbar-text" style=" color: #ffffff;font-size:18px;">去提交申请单</p>
+                    </div>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="my-modal modal fade bs-example-modal-lg in" tabindex="-1" role="dialog"
+         aria-labelledby="myLargeModalLabel" style="display: none; padding-right: 17px;">
+    </div>
+</div>
+</body>
+
+<script type="text/x-jsrender" id="tabNavTemplate">
+            {{for #data}}
+            <li role="presentation" class="{{if #getIndex() == 0}}active{{/if}}">
+                <a href="#tab-{{:#getIndex()}}" aria-controls="tab-{{:#getIndex()}}" role="tab" data-toggle="tab">
+                    <img src="/images/Icon.png" width="32px" height="32px" /><div class="text-muted"><small>{{:name}}</small></div>
+                </a>
+            </li>
+            {{/for}}
+
+</script>
+<script type="text/x-jsrender" id="tabContentTemplate">
+            {{for #data}}
+            <div role="tabpanel"
+                 class="tab-pane {{if #getIndex() == 0}}active{{/if}} panel panel-default" id="tab-{{:#getIndex()}}">
+                {{for children}}
+                <div class="panel-heading">
+                    {{:name}}
+                    <span onclick="selectCate({{:id}})" class="glyphicon glyphicon-circle-arrow-right pull-right"></span>
+                </div>
+                <div class="panel-body">
+                    {{for children}}
+                    <a onclick="selectCate({{:id}})"><p class="text-muted">{{:name}}</p></a>
+                    {{/for}}
+                </div>
+                {{/for}}
+            </div>
+            {{/for}}
+
+</script>
+<script type="text/x-jsrender" id="contentTemplate">
+            {{for #data}}
+            <div class="col-xs-6 item-box">
+                <div>
+                    <div class="thumbnail" style="height:168px;">
+                        <img src="{{:PhotoFullPath}}" width="64" height="64"/>
+                    </div>
+                    <p class="text-muted"><small>{{:Materialname}}</small></p>
+                    <span onclick="add2Cart('{{:Materialid}}')" class="img-add2cart"></span>
+                </div>
+            </div>
+            {{/for}}
+
+</script>
+<script>
+    function insert(obj, data, index) {
+        function found(o, name) {
+            for (var i in o) {
+                if (o[i].name == name) {
+                    return o[i];
+                }
+            }
+            return null;
+        }
+
+        if (index == 4)
+            return;
+        var key = 'L' + index + '_categoryName';
+        var keyId = 'L' + index + '_categoryid';
+        var res = found(obj, data[key]);
+        if (res == null) {
+            var nextKey = 'L' + (++index) + '_categoryName';
+            var obj1 = {name: data[key], id: data[keyId], children: []};
+            insert(obj1.children, data, index);
+            obj.push(obj1)
+        } else {
+            insert(res.children, data, ++index);
+        }
+    }
+
+    function selectCate(id) {
+        $('#cates').val(id);
+        $('.nav-cate .navbar-toggle').click();
+        param.strCategoryID = id;
+        getContent(param, true);
+    }
+    function add2Cart(Materialid) {
+        $.post('/apply/InsertMaterialToDraft', {materialid: Materialid}, function (data) {
+            updateCart();
+        }, 'json')
+    }
+
+    function updateCart(num) {
+        if (num != undefined) $('#cartCount').text(num);
+        else {
+            num = parseInt($('#cartCount').text()) || 0;
+            $('#cartCount').text(++num);
+        }
+    }
+
+    var param = {pageindex: 0, pageSize: 10, strCategoryID: '', strVariable: ''};
+
+    function getContent(param, clear) {
+        $.getJSON('/apply/GetMaterialList', param, function (data) {
+            console.log(data)
+            var html = data.length == 0 ?
+                    '<div class="text-center">没有记录了！</div>' :
+                    $('#contentTemplate').render(data);
+            if (clear)
+                $('.data-content').html(html);
+            else $('.data-content').append(html);
+
+            if (data.length == 0 || data.length < param.pageSize) {
+                $('#viewMore').hide();
+            } else {
+                $('#viewMore').show();
+            }
+        })
+    }
+    function search() {
+        param.pageindex = 0;
+        param.strCategoryID = $('#cates').val();
+        param.strVariable = $('#keywords').val();
+        getContent(param, true);
+    }
+    $(function () {
+        getContent(param, true);
+        $.getJSON('/apply/GetAllSubCategroy', function (data) {
+            var arr = []
+            for (var i in data) {
+                insert(arr, data[i], 1)
+            }
+            console.log(arr)
+            $('.nav-stacked').html($('#tabNavTemplate').render(arr));
+            $('.tab-content').html($('#tabContentTemplate').render(arr))
+        });
+
+        $.getJSON('/apply/GetDraftMaterialCount', function (data) {
+            updateCart(data)
+        })
+        $('#keywords').keydown(function (e) {
+            if (e.keyCode == 13) {
+                search();
+            }
+        });
+        $('#search').click(function () {
+            search();
+        })
+
+        $('#viewMore').click(function () {
+            param.pageindex++;
+            getContent(param);
+        })
+
+        $('.nav-cate .navbar-toggle').click(function () {
+            if ($(this).attr('aria-expanded') == 'false') {
+                $('.my-modal').css('display', 'block');
+            } else {
+                $('.my-modal').css('display', 'none');
+            }
+        })
+        $('.my-modal').click(function () {
+            $('.nav-cate .navbar-toggle').click();
+        })
+    })
+
+</script>
+</html>

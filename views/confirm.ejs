@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ./common/header %>
+    <style>
+        .maincontent {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .main-container {
+            border: 3px solid #F5F5F5;
+        }
+
+        .main-container .row {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .main-container .row .col-xs-4 {
+            padding-left: 5px;
+        }
+
+        .main-container .space {
+            margin: 0 -5px;
+            border: 1px solid #F5F5F5;
+        }
+
+        .main-container .row .col-left {
+            padding-left: 5px;
+        }
+
+        .main-container .row .col-left .text-muted {
+            margin-bottom: 0;
+        }
+
+        .numberPicker {
+            top: 4px;
+            width: 80px;
+            display: inline-table;
+        }
+
+        .numberPicker .input-group-addon {
+            padding: 0 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .numberPicker input {
+            height: 20px;
+        }
+
+        .label-label {
+            margin-top: 1px;
+            cursor: pointer;
+            background-color: #ffffff;
+            border: 1px solid #F5F5F5;
+            color: #BBB4B4;
+        }
+
+        .label-label-red {
+            border-color: #d9534f;
+        }
+
+        .delete-btn {
+            color: #5cb85c;
+            position: absolute;
+            right: 1px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="header clearfix text-center">
+    <span class="pull-right header-icon"><a href="/" class="glyphicon glyphicon-home" aria-hidden="true"></a></span>
+    <span class="">确认并提交申请单</span>
+    <span class="pull-left header-icon"><a href="Index" class="glyphicon glyphicon-chevron-left" aria-hidden="true"></a></span>
+</div>
+<div class="container maincontent">
+    <div class="main-container">
+        <div class="container contentDiv">
+        </div>
+    </div>
+    <nav class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <div class="col-xs-6" style="background-color: #585457;">
+                    <p class="navbar-text" style=" color: #ffffff; font-size: 18px;"> 件数：<span id="cartCount">0</span>
+                    </p>
+                </div>
+                <div class="col-xs-6" style="background-color: #F35749;">
+                    <a onclick="ConfirmOrder.submit()" id="submitBtn"><p class="navbar-text"
+                                                                         style=" color: #ffffff;font-size:18px;cursor:pointer;">
+                        确认无误并提交 </p></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+</body>
+<script type="text/x-jsrender" id="dataTemplate">
+        {{for #data}}
+        {{if #getIndex() !=0}}
+        <div class="space"></div>
+        {{/if}}
+        <div class="row" id="{{:Materialid}}">
+            <div class="col-xs-4">
+                <img src="{{:FullImageurl}}" width="90" height="120" />
+            </div>
+            <div class="col-xs-8 col-left">
+                <p class="text-muted"><small>{{:Materialname}}</small></p>
+                <div class="text-muted">
+                    <small>数量</small>
+                    <div class="input-group numberPicker">
+                        <span class="input-group-addon" onclick="ConfirmOrder.operateCount(this, 1, '{{:Materialid}}')">+</span>
+                        <input type="text" class="form-control" aria-label="" value="{{:Quantity}}" />
+                        <span class="input-group-addon" onclick="ConfirmOrder.operateCount(this, -1, '{{:Materialid}}')">-</span>
+                    </div>
+                </div>
+                <p class="text-muted"><small>申请原因</small></p>
+                <div class="text-muted">
+                    <span data="lost" onclick="ConfirmOrder.markReason(this, '01', '{{:Materialid}}')" class="label label-label label-label-red">丢失</span>
+                    <span data="damage" onclick="ConfirmOrder.markReason(this, '02','{{:Materialid}}')" class="label label-label">损坏</span>
+                    <span data="quality" onclick="ConfirmOrder.markReason(this, '03','{{:Materialid}}')" class="label label-label">质量问题</span>
+                    <span data="other" onclick="ConfirmOrder.markReason(this, '04', '{{:Materialid}}')" class="label label-label">其他</span>
+                </div>
+                <p class="text-muted"><small>填写备注</small></p>
+                <div class="text-muted">
+                    <textarea rows="1" onblur="ConfirmOrder.comment(this, '{{:Materialid}}')"></textarea>
+                </div>
+                <span onclick="ConfirmOrder.remove(this, '{{:Materialid}}')" class="glyphicon glyphicon-minus-sign delete-btn" style=""></span>
+            </div>
+        </div>
+        {{/for}}
+
+</script>
+<script>
+    var ConfirmOrder = {
+        init: function () {
+            this.loadData();
+        },
+        payload: {},
+        loadData: function () {
+            $.getJSON('/apply/GetDraftMaterialList', {}, function (data) {
+                $('.contentDiv').html($('#dataTemplate').render(data));
+                var payload = {};
+                for (var i in data) {
+                    payload[data[i].Materialid] = data[i];
+                    payload[data[i].Materialid].Strreason = '丢失';
+                    payload[data[i].Materialid].Qty = data[i].Quantity;
+                }
+                this.payload = payload;
+            }.bind(this));
+            $.getJSON('GetDraftMaterialCount', function (data) {
+                this.updateCart(data, true);
+            }.bind(this))
+        },
+        updateCart: function (num, init) {
+            if (init) $('#cartCount').text(num);
+            else {
+                var current = parseInt($('#cartCount').text());
+                $('#cartCount').text(current + num);
+            }
+        }
+        ,
+        operateCount: function (obj, num, Materialid) {
+            var input = $(obj).parent().find('input');
+            var count = parseInt(input.val());
+            if ((count + num) < 0) return;
+            input.val(count + num);
+            this.payload[Materialid].Qty = count + num;
+            this.updateCart(num)
+        }
+        ,
+        remove: function (obj, Materialid) {
+            delete this.payload[Materialid];
+            var parent = $(obj).parent().parent();
+            if (parent.next().length > 0) {
+                parent.next().remove();
+            } else {
+                if (parent.prev().length > 0) parent.prev().remove();
+            }
+            parent.remove();
+            $.ajax({
+                url: '/apply/DelDraftbyMaterialID?materialid=' + Materialid,
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function () {
+                    console.log("remove success")
+                }
+            })
+        }
+        ,
+        markReason: function (obj, reason, Materialid) {
+            this.payload[Materialid].Strreason = reason;
+            $(obj).parent().find('.label-label-red').removeClass('label-label-red');
+            $(obj).addClass('label-label-red');
+        }
+        ,
+        comment: function (obj, Materialid) {
+            this.payload[Materialid].Strcomment = $(obj).val();
+        }
+        ,
+        submit: function () {
+            var arr = [];
+            var keys = Object.keys(this.payload);
+            for (var i in keys) {
+                arr.push(this.payload[keys[i]]);
+            }
+            $.ajax({
+                url: '/apply/DoneSubmitDraftApply',
+                type: 'POST',
+                data: JSON.stringify(arr),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function (data) {
+                    alert("申请成功！申请单号：" + data.app)
+                    window.location.href = 'Index';
+                }
+            });
+
+        }
+    }
+    $(function () {
+        ConfirmOrder.init();
+    })
+
+</script>
+</html>
